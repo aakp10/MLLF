@@ -67,3 +67,23 @@ display_process(process **ready_queue, int size)
     printf("END\n");
 
 }
+
+static int
+get_gcd(int num1, int num2)
+{
+    if(num2 == 0)
+        return num1;
+    return get_gcd(num2, num1%num2);
+}
+
+int get_lcm(task **global_tasks, int task_count)
+{
+    int hyper_period = 1;
+    for(int i = 0; i < task_count; i++)
+    {
+        task *p2 = global_tasks[i];
+        //printf("%d, ", p2->period);
+        hyper_period = (hyper_period * p2->period)/get_gcd(hyper_period, p2->period);
+    }
+    return hyper_period;
+}

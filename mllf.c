@@ -12,7 +12,7 @@ int main()
 {
     submit_processes(&global_tasks, &task_count, &pid_count, &ready_queue);
     display_process(ready_queue, task_count);
-    //printf("%d", get_lcm());
+    printf("%d", get_lcm(global_tasks, task_count));
     //anticipated_arrival = NULL;
     //schedule_lst(ready_queue, task_count, get_lcm());*/
     return 0;
