@@ -30,23 +30,40 @@ process_init(int pid_v, int wcet_v, int task_id, task *task_ref)
 }
 
 void
-submit_processes(task *taskset[], int task_count, int pid_count, process *ready_queue[])
+submit_processes(task ***global_tasks, int *task_count, int *pid_count, process ***rq)
 {
-    FILE *task_file = fopen("tasks", "r");
+    FILE *task_file = fopen("input", "r");
     int wcet, period, deadline;
     int task_no = 0;
     int process_count;
     fscanf(task_file,"%d", &process_count);
+    printf("%d", process_count);
     //pqueue *ready_queue = pqueue_init(process_count, MAXPROCESS);
-    taskset = (task**)malloc(process_count * sizeof(task*));
+    task **taskset = (task**)malloc(process_count * sizeof(task*));
+    process **ready_queue = (process **)malloc(process_count * sizeof(process*));
     //wcet, period, deadline
     while(fscanf(task_file, "%d, %d, %d", &wcet, &period, &deadline) == 3)
     {
-        task *t = task_init(task_count++, wcet, period, deadline);
-        //process_init(int pid_v, int wcet_v, int priority_v, int task_id, task *task_ref);
-        process *p = process_init(pid_count++, wcet, task_count, t);
-        taskset[task_count-1] = t;
-        ready_queue[task_count-1] = p;
+        printf("%d, %d, %d\n", wcet, period, deadline);
+        task *t = task_init((*task_count)++, wcet, period, deadline);
+        process *p = process_init((*pid_count)++, wcet, *task_count, t);
+        taskset[(*task_count)-1] = t;
+        ready_queue[(*task_count)-1] = p;
     }
     fclose(task_file);
+    *global_tasks = taskset;
+    *rq = ready_queue;
+}
+
+
+void
+display_process(process **ready_queue, int size)
+{
+    printf("READY PROCESSES\n");
+    for(int i = 0; i < size; i++)
+    {
+        printf("pid:%d deadline:%d\n", ready_queue[i]->pid, ready_queue[i]->task_ref->deadline);
+    }
+    printf("END\n");
+
 }

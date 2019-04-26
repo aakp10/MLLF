@@ -29,5 +29,6 @@ struct process{
     task *task_ref;
 };
 
-void    submit_processes(task *taskset[], int task_count, int pid_count, process *ready_queue[]);
+void    submit_processes(task ***taskset, int *task_count, int *pid_count, process ***ready_queue);
+void    display_process(process **ready_queue, int size);
 #endif
