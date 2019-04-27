@@ -1,6 +1,8 @@
 #include "tasks.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
+
 task*
 task_init(int task_id, int wcet, int period, int deadline)
 {
@@ -10,6 +12,7 @@ task_init(int task_id, int wcet, int period, int deadline)
     temp->period = period;
     temp->deadline = deadline;
     temp->next_release_time = period;
+    temp->job = NULL;
     return temp;
 }
 
@@ -47,6 +50,8 @@ submit_processes(task ***global_tasks, int *task_count, int *pid_count, process 
         printf("%d, %d, %d\n", wcet, period, deadline);
         task *t = task_init((*task_count)++, wcet, period, deadline);
         process *p = process_init((*pid_count)++, wcet, *task_count, t);
+        //no phase
+        t->job = p;
         taskset[(*task_count)-1] = t;
         ready_queue[(*task_count)-1] = p;
     }
@@ -86,4 +91,78 @@ int get_lcm(task **global_tasks, int task_count)
         hyper_period = (hyper_period * p2->period)/get_gcd(hyper_period, p2->period);
     }
     return hyper_period;
+}
+
+float
+get_min_lax(process **ready_queue, int task_count)
+{
+    float min_lax =  1<<30;
+    for(int i = 0; i < task_count; i++)
+    {
+        if(ready_queue[i])
+            min_lax = min(min_lax, ready_queue[i]->slack);
+    }
+    return min_lax;
+}
+
+int
+get_min_lax_procs(process **ready_queue, int task_count)
+{
+    float min_lax = get_min_lax(ready_queue, task_count);
+    int *proc_list = (int*)malloc(task_count * sizeof(int));
+    int min_deadline = 1<<30;
+    int to_return = -1;
+    for(int i = 0, j = 0; i < task_count; i++)
+    {
+        if(ready_queue[i] != NULL && ready_queue[i]->slack == min_lax)
+        {
+            //proc_list[j++] = i;
+            min_deadline = min(min_deadline, ready_queue[i]->task_ref->deadline);
+            if(min_deadline == ready_queue[i]->task_ref->deadline)
+                to_return = i;
+        }
+    }
+    return to_return;
+}
+
+int
+get_min_deadline_lax(int least_lax_proc[])
+{
+    //int size
+    //for(int i = 0;)
+}
+
+int
+get_next_edf(int min_deadline_task, process **rdqueue, int nproc)
+{
+    int min_lax = 1<<30;
+    int min_index = -1;
+    for(int i = 0; i < nproc; i++)
+    {
+        if(rdqueue[i] && rdqueue[i]->slack > rdqueue[min_deadline_task]->slack)
+        {
+            if (min_lax > rdqueue[i]->task_ref->deadline)
+            {
+                min_lax = rdqueue[i]->task_ref->deadline;
+                min_index = i;
+            }
+        }
+    }
+    return min_index;
+}
+
+float
+get_next_arrival(process **rdqueue, int cur_time, int nproc)
+{
+    float min_arrival = 1<<30;
+    for(int i = 0; i < nproc; i++)
+    {
+        if(rdqueue[i] == NULL)
+        {
+            float arr = ceilf(cur_time/rdqueue[i]->task_ref->deadline);
+            arr *= rdqueue[i]->task_ref->deadline;
+            min_arrival = min(min_arrival, arr);
+        }
+    }
+    return min_arrival;
 }

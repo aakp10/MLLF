@@ -1,6 +1,8 @@
 #ifndef __TASKS_H_
 #define __TASKS_H_
 
+#define min(a,b) (a<b?a:b)
+typedef struct process process;
 typedef struct _task task;
 struct _task{
     int task_id;
@@ -9,9 +11,10 @@ struct _task{
     //absolute deadline
     int deadline;
     int next_release_time;
+    process *job;
 };
 
-typedef struct process process;
+
 struct process{
     int pid;
     //to map the job to task
@@ -32,4 +35,10 @@ struct process{
 void    submit_processes(task ***taskset, int *task_count, int *pid_count, process ***ready_queue);
 void    display_process(process **ready_queue, int size);
 int     get_lcm(task **global_tasks, int task_count);
+process* process_init(int pid_v, int wcet_v, int task_id, task *task_ref);
+float   get_next_arrival(process **rdqueue, int cur_time, int nproc);
+int
+get_next_edf(int min_deadline_task, process **rdqueue, int nproc);
+int
+get_min_lax_procs(process **ready_queue, int task_count);
 #endif
