@@ -12,6 +12,7 @@ struct _task{
     int deadline;
     int next_release_time;
     process *job;
+    int job_index;
 };
 
 
@@ -32,7 +33,7 @@ struct process{
     task *task_ref;
 };
 
-void    submit_processes(task ***taskset, int *task_count, int *pid_count, process ***ready_queue);
+void    submit_processes(task ***taskset, int *task_count, int *pid_count, process ***ready_queue, float *util);
 void    display_process(process **ready_queue, int size);
 int     get_lcm(task **global_tasks, int task_count);
 process* process_init(int pid_v, int wcet_v, int task_id, task *task_ref);

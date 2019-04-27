@@ -13,6 +13,7 @@ task_init(int task_id, int wcet, int period, int deadline)
     temp->deadline = deadline;
     temp->next_release_time = period;
     temp->job = NULL;
+    temp->job_index = 1;
     return temp;
 }
 
@@ -33,9 +34,9 @@ process_init(int pid_v, int wcet_v, int task_id, task *task_ref)
 }
 
 void
-submit_processes(task ***global_tasks, int *task_count, int *pid_count, process ***rq)
+submit_processes(task ***global_tasks, int *task_count, int *pid_count, process ***rq, float *util)
 {
-    FILE *task_file = fopen("input2", "r");
+    FILE *task_file = fopen("input3", "r");
     int wcet, period, deadline;
     int task_no = 0;
     int process_count;
@@ -49,11 +50,12 @@ submit_processes(task ***global_tasks, int *task_count, int *pid_count, process 
     {
         printf("%d, %d, %d\n", wcet, period, deadline);
         task *t = task_init((*task_count)++, wcet, period, deadline);
-        process *p = process_init((*pid_count)++, wcet, *task_count, t);
+        process *p = process_init((*pid_count)++, wcet, (*task_count)-1, t);
         //no phase
         t->job = p;
         taskset[(*task_count)-1] = t;
         ready_queue[(*task_count)-1] = p;
+        *util += (float)wcet/period;
     }
     fclose(task_file);
     *global_tasks = taskset;
