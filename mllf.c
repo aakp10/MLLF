@@ -39,9 +39,12 @@ check_arrivals(process **rdqueue, int cur_time, int nproc)
             global_tasks[i]->next_release_time += global_tasks[i]->period;
             //deadline is considered same as period
             global_tasks[i]->deadline += global_tasks[i]->period;
+            printf("Deadline updated for task %d is %d", i, global_tasks[i]->deadline);
             //recreate the process .
             process *p = process_init(pid_count++, global_tasks[i]->wcet,
                                         global_tasks[i]->task_id, global_tasks[i]);
+            //decrease the slack by cur_time
+            p->slack -= cur_time;
             //enqueue into the job_list
             //task_submit_job(global_tasks[i], p);
             ready_queue[i] = p;
@@ -58,7 +61,8 @@ schedule_lst(process **rdqueue, int nproc, int hyperperiod)
     int prev_task_id = -1;
     int cur_task_id = -1;
     int cpu_idle_time = 0;
-    while(cur_time <= hyperperiod)
+    int prev_min_deadline_task;
+    while(cur_time < hyperperiod)
     {
         /**
         * FIXME: new arrivals
@@ -67,10 +71,19 @@ schedule_lst(process **rdqueue, int nproc, int hyperperiod)
         //int *least_lax_procs = get_min_lax_procs(rdqueue, nproc);
         //find min deadline job among least_lax_procs
         int min_deadline_task = get_min_lax_procs(rdqueue, nproc);
+        if(min_deadline_task != -1)
+        {
+            if(prev_min_deadline_task && rdqueue[prev_min_deadline_task] && rdqueue[min_deadline_task]->slack == rdqueue[prev_min_deadline_task]->slack)
+            {
+                min_deadline_task = prev_min_deadline_task;
+            }
+        }
+        
+
         //find next least deadline more than this task and laxity more than this
         int next_least_deadline_task = get_next_edf(min_deadline_task, rdqueue, nproc);
-        cur_task_id = rdqueue[min_deadline_task]->task_id;
         if(min_deadline_task != -1) {
+            cur_task_id = rdqueue[min_deadline_task]->task_id;
             //printf("time:%d process executing: %d\n", cur_time, cur_proc->pid);
             /*FILE *schedule_file = fopen("schedule.txt", "a+");
             int laxity = rdqueue[min_deadline_task]->task_ref->deadline - cur_time - rdqueue[min_deadline_task]->ret;
@@ -79,24 +92,28 @@ schedule_lst(process **rdqueue, int nproc, int hyperperiod)
             printf("time:%d process executing: %d actual execution time = %d laxity: %d\n", cur_time, cur_proc->pid, cur_proc->aet, laxity);
             fclose(schedule_file);*/
             //find the next least slack time job
-            float deadline_diff = rdqueue[next_least_deadline_task]->task_ref->deadline - rdqueue[min_deadline_task]->slack;
+            float deadline_diff;
+            if(next_least_deadline_task != -1)
+                deadline_diff = rdqueue[next_least_deadline_task]->task_ref->deadline - rdqueue[min_deadline_task]->slack;
+            else deadline_diff = 1<<30;
             float next_completion = rdqueue[min_deadline_task]->ret;
-            float next_arrival = get_next_arrival(rdqueue, cur_time, nproc) -cur_time;
+            float next_arrival = get_next_arrival(rdqueue, cur_time, nproc, global_tasks) -cur_time;
             //Processor claimed by the job for ∆ = next-min-slack-time - current-slack-time.
-
             printf("next completion %f", next_completion+cur_time);
             printf("next arrival %f \n", next_arrival+cur_time);
             float next_decision = min(deadline_diff, min(next_completion, next_arrival));
                 rdqueue[min_deadline_task]->ret -= next_decision;
                 cur_time += next_decision;
+            printf("next decision pt%f", next_decision);
             //cur_time++;
             if(rdqueue[min_deadline_task]->ret == 0) {
+                printf("deleting%d", min_deadline_task);
                 /*FILE *log_file = fopen("sched-op-lst.txt", "a+");
                 int response_time = cur_time - cur_proc->task_ref->next_release_time - cur_proc->task_ref->period; 
                 fprintf(log_file, "task: %d pid:%d aet: %d RESPONSE TIME: %d ", cur_proc->task_id, cur_proc->pid,
                             cur_proc->aet, response_time);
                 fclose(log_file);*/
-                //updated anticipated_arrival list
+                //updated anticipatedfloat deadline_diff_arrival list
                 //arrival_list_add(cur_proc->task_ref->next_release_time);
                 //pqueue_extract_process(rdqueue, cur_proc);
                 rdqueue[min_deadline_task] = NULL;
@@ -117,6 +134,7 @@ schedule_lst(process **rdqueue, int nproc, int hyperperiod)
         prev_task_id = cur_task_id;
         //update slacks
         update_slack(rdqueue, nproc, cur_time);
+        prev_min_deadline_task = min_deadline_task;
     }
     /*FILE *log_file = fopen("sched-op-lst.txt", "a+");
     fprintf(log_file, "cpu idle time %d cpu time utilized %d/%d", cpu_idle_time, hyperperiod - cpu_idle_time, hyperperiod);

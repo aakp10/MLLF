@@ -35,7 +35,7 @@ process_init(int pid_v, int wcet_v, int task_id, task *task_ref)
 void
 submit_processes(task ***global_tasks, int *task_count, int *pid_count, process ***rq)
 {
-    FILE *task_file = fopen("input", "r");
+    FILE *task_file = fopen("input2", "r");
     int wcet, period, deadline;
     int task_no = 0;
     int process_count;
@@ -99,8 +99,12 @@ get_min_lax(process **ready_queue, int task_count)
     float min_lax =  1<<30;
     for(int i = 0; i < task_count; i++)
     {
+        
         if(ready_queue[i])
+        {
+            printf("lax %d = %d", i, ready_queue[i]->slack);
             min_lax = min(min_lax, ready_queue[i]->slack);
+        }
     }
     return min_lax;
 }
@@ -116,12 +120,14 @@ get_min_lax_procs(process **ready_queue, int task_count)
     {
         if(ready_queue[i] != NULL && ready_queue[i]->slack == min_lax)
         {
+
             //proc_list[j++] = i;
             min_deadline = min(min_deadline, ready_queue[i]->task_ref->deadline);
             if(min_deadline == ready_queue[i]->task_ref->deadline)
                 to_return = i;
         }
     }
+    printf("Min lax proc is %d", to_return);
     return to_return;
 }
 
@@ -152,15 +158,16 @@ get_next_edf(int min_deadline_task, process **rdqueue, int nproc)
 }
 
 float
-get_next_arrival(process **rdqueue, int cur_time, int nproc)
+get_next_arrival(process **rdqueue, int cur_time, int nproc, task **taskset)
 {
     float min_arrival = 1<<30;
     for(int i = 0; i < nproc; i++)
     {
         if(rdqueue[i] == NULL)
         {
-            float arr = ceilf(cur_time/rdqueue[i]->task_ref->deadline);
-            arr *= rdqueue[i]->task_ref->deadline;
+            int arr = ceilf((float)cur_time/taskset[i]->period);
+            printf("arr in arrival %d", arr);
+            arr *= taskset[i]->period;
             min_arrival = min(min_arrival, arr);
         }
     }

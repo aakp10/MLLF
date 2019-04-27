@@ -36,7 +36,7 @@ void    submit_processes(task ***taskset, int *task_count, int *pid_count, proce
 void    display_process(process **ready_queue, int size);
 int     get_lcm(task **global_tasks, int task_count);
 process* process_init(int pid_v, int wcet_v, int task_id, task *task_ref);
-float   get_next_arrival(process **rdqueue, int cur_time, int nproc);
+float   get_next_arrival(process **rdqueue, int cur_time, int nproc, task **taskset);
 int
 get_next_edf(int min_deadline_task, process **rdqueue, int nproc);
 int
