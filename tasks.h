@@ -53,4 +53,8 @@ get_next_edf(int min_deadline_task, process **rdqueue, int nproc);
 int
 get_min_lax_procs(process **ready_queue, int task_count);
 cache   check_cache_impact(int cur_task_id, int prev_task_id);
+void    update_slack(process **rdqueue, int nproc, int cur_time);
+void    check_arrivals(process **ready_queue, task **global_tasks, int cur_time, int nproc, int *pid_count);
+void    schedule_mllf(process **rdqueue, int nproc, int hyperperiod, task **global_tasks, int *pid_count);
+void    calculate_parameters(task **global_tasks, int task_count);
 #endif
