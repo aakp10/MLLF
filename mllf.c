@@ -57,7 +57,7 @@ check_arrivals(process **rdqueue, int cur_time, int nproc)
 }
 
 void
-schedule_lst(process **rdqueue, int nproc, int hyperperiod)
+schedule_mllf(process **rdqueue, int nproc, int hyperperiod)
 {
     int cur_time = 0;
     int prev_task_id = -1;
@@ -65,12 +65,15 @@ schedule_lst(process **rdqueue, int nproc, int hyperperiod)
     int cpu_idle_time = 0;
     int prev_min_deadline_task = -1;
     int preemption_count = 0;
+    int cache_impact = 0;
+    int prev_pid = -1;
+    int context_switches = 0;
     while(cur_time < hyperperiod)
     {
         /**
         * FIXME: new arrivals
         */
-        preemption_count++;
+        //preemption_count++;
         check_arrivals(rdqueue, cur_time, nproc);
         //int *least_lax_procs = get_min_lax_procs(rdqueue, nproc);
         //find min deadline job among least_lax_procs
@@ -86,6 +89,12 @@ schedule_lst(process **rdqueue, int nproc, int hyperperiod)
         //find next least deadline more than this task and laxity more than this
         int next_least_deadline_task = get_next_edf(min_deadline_task, rdqueue, nproc);
         if(min_deadline_task != -1) {
+            int cur_pid = rdqueue[min_deadline_task]->pid;
+            if(prev_pid != -1 && cur_pid != prev_pid)
+            {
+                preemption_count++;
+            }
+            prev_pid = cur_pid;
             cur_task_id = rdqueue[min_deadline_task]->task_id;
             //printf("time:%d process executing: %d\n", cur_time, cur_proc->pid);
             FILE *schedule_file = fopen("schedule.txt", "a+");
@@ -127,6 +136,7 @@ schedule_lst(process **rdqueue, int nproc, int hyperperiod)
                 //printf("time:%d process executing: %d actual execution time = %d laxity: %d\n", cur_time, cur_proc->pid, cur_proc->aet, laxity);
                 fclose(schedule_file);
                 rdqueue[min_deadline_task] = NULL;
+                context_switches++;
                 //calculate_parameters(global_tasks, cur_task_id, cur_time);
                 /**
                 *free
@@ -147,13 +157,17 @@ schedule_lst(process **rdqueue, int nproc, int hyperperiod)
         /*FILE *log_file = fopen("sched-op-lst.txt", "a+");
             fprintf(log_file, "cache impact: %d", check_cache_impact(cur_task_id, prev_task_id));
         fclose(log_file);*/
+        if(prev_task_id != -1 && check_cache_impact(prev_task_id, cur_task_id) == CACHE_IMPACT)
+        {
+            cache_impact++;
+        }
         prev_task_id = cur_task_id;
         //update slacks
         update_slack(rdqueue, nproc, cur_time);
         prev_min_deadline_task = min_deadline_task;
     }
     FILE *log_file = fopen("sched-op-mllf.txt", "a+");
-    fprintf(log_file, "cpu idle time %d cpu time utilized %d/%d preemption point %d\n", cpu_idle_time, hyperperiod - cpu_idle_time, hyperperiod, preemption_count);
+    fprintf(log_file, "cpu idle time %d cpu time utilized %d/%d preemption point %d context switches %d\n cache impact %d\n", cpu_idle_time, hyperperiod - cpu_idle_time, hyperperiod, preemption_count, context_switches, cache_impact);
     fclose(log_file);
 }
 
@@ -231,7 +245,7 @@ int main()
     fclose(log_file);
     printf("%d", get_lcm(global_tasks, task_count));
     //anticipated_arrival = NULL;
-    schedule_lst(ready_queue, task_count, lcm);
+    schedule_mllf(ready_queue, task_count, lcm);
     calculate_parameters(global_tasks, task_count);
     return 0;
 }

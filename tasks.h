@@ -35,6 +35,14 @@ struct process{
     task *task_ref;
 };
 
+typedef enum _cache cache;
+enum _cache{
+    NO_CACHE_IMPACT,
+    CACHE_IMPACT,
+    NUM_STATES
+};
+
+
 void    submit_processes(task ***taskset, int *task_count, int *pid_count, process ***ready_queue, float *util);
 void    display_process(process **ready_queue, int size);
 int     get_lcm(task **global_tasks, int task_count);
@@ -44,4 +52,5 @@ int
 get_next_edf(int min_deadline_task, process **rdqueue, int nproc);
 int
 get_min_lax_procs(process **ready_queue, int task_count);
+cache   check_cache_impact(int cur_task_id, int prev_task_id);
 #endif

@@ -38,7 +38,7 @@ next decision pt2.000000pid:5 priority: 0 slack 2
 END
 Entered check_arrivals for 0 at 15Deadline updated for task 0 is 19Entered check_arrivals for 2 at 15Deadline updated for task 2 is 30lax 0 = 2lax 1 = 2lax 2 = 11Min lax proc is 1next edf2
 next completion 16.000000next arrival 1073741824.000000 
-next decision pt1.000000deleting1pid:6 priority: 21954 slack 1 
+next decision pt1.000000deleting1pid:6 priority: 21962 slack 1 
 pid:7 priority: 0 slack 10 
 END
 lax 0 = 1lax 2 = 10Min lax proc is 0next edf2
@@ -66,4 +66,3 @@ lax 2 = 1Min lax proc is 2next edf-1
 arr in arrival 6arr in arrival 3next completion 29.000000next arrival 30.000000 
 next decision pt2.000000deleting2END
 Min lax proc is -1END
-response of T0 max 3.000000 min 2.000000response of T1 max 6.000000 min 5.000000response of T2 max 14.000000 min 13.000000
