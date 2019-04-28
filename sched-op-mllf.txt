@@ -1,0 +1,3 @@
+Hyperperiod 30
+Utilisation 0.966667
+cpu idle time 1 cpu time utilized 29/30 preemption point 15

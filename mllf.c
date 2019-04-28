@@ -94,8 +94,9 @@ schedule_lst(process **rdqueue, int nproc, int hyperperiod)
             fclose(schedule_file);
             //find the next least slack time job
             float deadline_diff;
+            printf("next edf%d\n", next_least_deadline_task);
             if(next_least_deadline_task != -1)
-                deadline_diff = rdqueue[next_least_deadline_task]->task_ref->deadline - rdqueue[min_deadline_task]->slack;
+                deadline_diff = rdqueue[next_least_deadline_task]->task_ref->deadline - rdqueue[min_deadline_task]->slack - cur_time;
             else deadline_diff = 1<<30;
             float next_completion = rdqueue[min_deadline_task]->ret;
             float next_arrival = get_next_arrival(rdqueue, cur_time, nproc, global_tasks) -cur_time;
@@ -127,6 +128,11 @@ schedule_lst(process **rdqueue, int nproc, int hyperperiod)
             }
         }
         else {
+            FILE *schedule_file = fopen("schedule.txt", "a+");
+            //int laxity = rdqueue[min_deadline_task]->task_ref->deadline - cur_time - rdqueue[min_deadline_task]->ret;
+            fprintf(schedule_file, "time:%d job executing: Idle\n", cur_time);
+            //printf("time:%d process executing: %d actual execution time = %d laxity: %d\n", cur_time, cur_proc->pid, cur_proc->aet, laxity);
+            fclose(schedule_file);
             cur_time++;
             cpu_idle_time++;
         }

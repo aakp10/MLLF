@@ -36,7 +36,7 @@ process_init(int pid_v, int wcet_v, int task_id, task *task_ref)
 void
 submit_processes(task ***global_tasks, int *task_count, int *pid_count, process ***rq, float *util)
 {
-    FILE *task_file = fopen("input3", "r");
+    FILE *task_file = fopen("input5", "r");
     int wcet, period, deadline;
     int task_no = 0;
     int process_count;

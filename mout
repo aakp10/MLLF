@@ -1,0 +1,68 @@
+32, 5, 4
+3, 10, 8
+4, 15, 15
+READY PROCESSES
+pid:0 deadline:4
+pid:1 deadline:8
+pid:2 deadline:15
+END
+30lax 0 = 2lax 1 = 5lax 2 = 11Min lax proc is 0next edf1
+next completion 2.000000next arrival 1073741824.000000 
+next decision pt2.000000deleting0pid:1 priority: 0 slack 3 
+pid:2 priority: 0 slack 9 
+END
+lax 1 = 3lax 2 = 9Min lax proc is 1next edf2
+arr in arrival 1next completion 5.000000next arrival 5.000000 
+next decision pt3.000000deleting1pid:2 priority: 0 slack 6 
+END
+Entered check_arrivals for 0 at 5Deadline updated for task 0 is 9lax 0 = 2lax 2 = 6Min lax proc is 0next edf2
+arr in arrival 1next completion 7.000000next arrival 10.000000 
+next decision pt2.000000deleting0pid:2 priority: 0 slack 4 
+END
+lax 2 = 4Min lax proc is 2next edf-1
+arr in arrival 2arr in arrival 1next completion 11.000000next arrival 10.000000 
+next decision pt3.000000pid:2 priority: 0 slack 4 
+END
+Entered check_arrivals for 0 at 10Deadline updated for task 0 is 14Entered check_arrivals for 1 at 10Deadline updated for task 1 is 18lax 0 = 2lax 1 = 5lax 2 = 4Min lax proc is 0next edf2
+next completion 12.000000next arrival 1073741824.000000 
+next decision pt2.000000deleting0pid:5 priority: 0 slack 3 
+pid:2 priority: 0 slack 2 
+END
+lax 1 = 3lax 2 = 2Min lax proc is 2next edf1
+arr in arrival 3next completion 13.000000next arrival 15.000000 
+next decision pt1.000000deleting2pid:5 priority: 0 slack 2 
+END
+lax 1 = 2Min lax proc is 1next edf-1
+arr in arrival 3arr in arrival 1next completion 16.000000next arrival 15.000000 
+next decision pt2.000000pid:5 priority: 0 slack 2 
+END
+Entered check_arrivals for 0 at 15Deadline updated for task 0 is 19Entered check_arrivals for 2 at 15Deadline updated for task 2 is 30lax 0 = 2lax 1 = 2lax 2 = 11Min lax proc is 1next edf2
+next completion 16.000000next arrival 1073741824.000000 
+next decision pt1.000000deleting1pid:6 priority: 21958 slack 1 
+pid:7 priority: 0 slack 10 
+END
+lax 0 = 1lax 2 = 10Min lax proc is 0next edf2
+arr in arrival 2next completion 18.000000next arrival 20.000000 
+next decision pt2.000000deleting0pid:7 priority: 0 slack 8 
+END
+lax 2 = 8Min lax proc is 2next edf-1
+arr in arrival 4arr in arrival 2next completion 22.000000next arrival 20.000000 
+next decision pt2.000000pid:7 priority: 0 slack 8 
+END
+Entered check_arrivals for 0 at 20Deadline updated for task 0 is 24Entered check_arrivals for 1 at 20Deadline updated for task 1 is 28lax 0 = 2lax 1 = 5lax 2 = 8Min lax proc is 0next edf1
+next completion 22.000000next arrival 1073741824.000000 
+next decision pt2.000000deleting0pid:9 priority: 0 slack 3 
+pid:7 priority: 0 slack 6 
+END
+lax 1 = 3lax 2 = 6Min lax proc is 1next edf2
+arr in arrival 5next completion 25.000000next arrival 25.000000 
+next decision pt3.000000deleting1pid:7 priority: 0 slack 3 
+END
+Entered check_arrivals for 0 at 25Deadline updated for task 0 is 29lax 0 = 2lax 2 = 3Min lax proc is 0next edf2
+arr in arrival 3next completion 27.000000next arrival 30.000000 
+next decision pt2.000000deleting0pid:7 priority: 0 slack 1 
+END
+lax 2 = 1Min lax proc is 2next edf-1
+arr in arrival 6arr in arrival 3next completion 29.000000next arrival 30.000000 
+next decision pt2.000000deleting2END
+Min lax proc is -1END
