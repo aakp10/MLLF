@@ -14,6 +14,8 @@ task_init(int task_id, int wcet, int period, int deadline)
     temp->next_release_time = period;
     temp->job = NULL;
     temp->job_index = 1;
+    //phase difference ignored
+    temp->arrival[0] = 0;
     return temp;
 }
 
@@ -101,7 +103,6 @@ get_min_lax(process **ready_queue, int task_count)
     float min_lax =  1<<30;
     for(int i = 0; i < task_count; i++)
     {
-        
         if(ready_queue[i])
         {
             printf("lax %d = %d", i, ready_queue[i]->slack);

@@ -13,6 +13,8 @@ struct _task{
     int next_release_time;
     process *job;
     int job_index;
+    float response_time[100];
+    float arrival[100];
 };
 
 

@@ -1,15 +1,30 @@
 time:0 job executing: T0-1
-time:2 job executing: T1-1
-time:5 job executing: T0-2
-time:7 job executing: T2-1
+job : T0-1 response time 2.000000time:2 job executing: T1-1
+job : T1-1 response time 5.000000time:5 job executing: T0-2
+job : T0-2 response time 2.000000time:7 job executing: T2-1
 time:10 job executing: T0-3
-time:12 job executing: T2-1
-time:13 job executing: T1-2
+job : T0-3 response time 2.000000time:12 job executing: T2-1
+job : T2-1 response time 13.000000time:13 job executing: T1-2
 time:15 job executing: T1-2
-time:16 job executing: T0-4
-time:18 job executing: T2-2
+job : T1-2 response time 6.000000time:16 job executing: T0-4
+job : T0-4 response time 3.000000time:18 job executing: T2-2
 time:20 job executing: T0-5
-time:22 job executing: T1-3
-time:25 job executing: T0-6
-time:27 job executing: T2-2
-time:29 job executing: Idle
+job : T0-5 response time 2.000000time:22 job executing: T1-3
+job : T1-3 response time 5.000000time:25 job executing: T0-6
+job : T0-6 response time 2.000000time:27 job executing: T2-2
+job : T2-2 response time 14.000000time:29 job executing: Idle
+time:0 job executing: T0-1
+job : T0-1 response time 2.000000time:2 job executing: T1-1
+job : T1-1 response time 5.000000time:5 job executing: T0-2
+job : T0-2 response time 2.000000time:7 job executing: T2-1
+time:10 job executing: T0-3
+job : T0-3 response time 2.000000time:12 job executing: T2-1
+job : T2-1 response time 13.000000time:13 job executing: T1-2
+time:15 job executing: T1-2
+job : T1-2 response time 6.000000time:16 job executing: T0-4
+job : T0-4 response time 3.000000time:18 job executing: T2-2
+time:20 job executing: T0-5
+job : T0-5 response time 2.000000time:22 job executing: T1-3
+job : T1-3 response time 5.000000time:25 job executing: T0-6
+job : T0-6 response time 2.000000time:27 job executing: T2-2
+job : T2-2 response time 14.000000time:29 job executing: Idle

@@ -40,6 +40,7 @@ check_arrivals(process **rdqueue, int cur_time, int nproc)
             //deadline is considered same as period
             global_tasks[i]->deadline += global_tasks[i]->period;
             global_tasks[i]->job_index += 1;
+            global_tasks[i]->arrival[global_tasks[i]->job_index-1] = cur_time;
             printf("Deadline updated for task %d is %d", i, global_tasks[i]->deadline);
             //recreate the process .
             process *p = process_init(pid_count++, global_tasks[i]->wcet,
@@ -118,6 +119,13 @@ schedule_lst(process **rdqueue, int nproc, int hyperperiod)
                 //updated anticipatedfloat deadline_diff_arrival list
                 //arrival_list_add(cur_proc->task_ref->next_release_time);
                 //pqueue_extract_process(rdqueue, cur_proc);
+                int job_index = global_tasks[cur_task_id]->job_index;
+                global_tasks[cur_task_id]->response_time[job_index-1] = cur_time - global_tasks[cur_task_id]->arrival[job_index-1];
+                FILE *schedule_file = fopen("schedule.txt", "a+");
+                //int laxity = rdqueue[min_deadline_task]->task_ref->deadline - cur_time - rdqueue[min_deadline_task]->ret;
+                fprintf(schedule_file, "job : T%d-%d response time %f", cur_task_id, global_tasks[cur_task_id]->job_index, global_tasks[cur_task_id]->response_time[job_index-1]);
+                //printf("time:%d process executing: %d actual execution time = %d laxity: %d\n", cur_time, cur_proc->pid, cur_proc->aet, laxity);
+                fclose(schedule_file);
                 rdqueue[min_deadline_task] = NULL;
                 //calculate_parameters(global_tasks, cur_task_id, cur_time);
                 /**
@@ -149,6 +157,68 @@ schedule_lst(process **rdqueue, int nproc, int hyperperiod)
     fclose(log_file);
 }
 
+void
+get_absolute_response_jitter(task *t)
+{
+    float max_response_time = t->wcet;
+    float min_response_time = 1<<30;
+    float *response_time = t->response_time;
+    for(int i = 0; i < t->job_index; i++)
+    {
+        if(max_response_time < response_time[i])
+            max_response_time = response_time[i];
+        if(min_response_time > response_time[i])
+            min_response_time = response_time[i];
+    }
+    //printf("response of T%d max %f min %f", t->task_id, max_response_time, min_response_time);
+    FILE *log_file = fopen("sched-op-mllf.txt", "a+");
+    fprintf(log_file, "Task %d absolute response time jitter %f\n", t->task_id, max_response_time - min_response_time);
+    fclose(log_file);
+}
+
+void
+get_relative_response_jitter(task *t)
+{
+    float *response_time = t->response_time;
+    float max_jitter = abs(response_time[0] - response_time[t->job_index - 1]);
+
+    for(int i = 0; i < t->job_index - 1; i++)
+    {
+        float response_diff = abs(response_time[i] - response_time[i+1]);
+        max_jitter = max_jitter < response_diff ? response_diff: max_jitter;
+    }
+    FILE *log_file = fopen("sched-op-mllf.txt", "a+");
+    fprintf(log_file, "Task %d relative response time jitter %f\n", t->task_id, max_jitter);
+    fclose(log_file);
+}
+
+void
+get_avergae_wait_time(task *t)
+{
+    float *response_time = t->response_time;
+    float avg = 0;
+    float wcet = t->wcet;
+    for(int i = 0; i < t->job_index - 1; i++)
+    {
+       avg += response_time[i] - wcet;
+    }
+    avg /= t->job_index;
+    FILE *log_file = fopen("sched-op-mllf.txt", "a+");
+    fprintf(log_file, "Task %d average wait time %f\n", t->task_id, avg);
+    fclose(log_file);
+}
+
+void
+calculate_parameters(task **global_tasks, int task_count)
+{
+    for(int i = 0; i < task_count; i++)
+    {
+        get_absolute_response_jitter(global_tasks[i]);
+        get_relative_response_jitter(global_tasks[i]);
+        get_avergae_wait_time(global_tasks[i]);
+    }
+}
+
 int main()
 {
     float util = 0;
@@ -162,5 +232,6 @@ int main()
     printf("%d", get_lcm(global_tasks, task_count));
     //anticipated_arrival = NULL;
     schedule_lst(ready_queue, task_count, lcm);
+    calculate_parameters(global_tasks, task_count);
     return 0;
 }
