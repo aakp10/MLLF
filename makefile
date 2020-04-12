@@ -1,2 +1,2 @@
 all:
-	gcc-9 -g mllf.c tasks.c -lm -o mllf
+	gcc-9 mllf.c tasks.c -lm -o mllf

@@ -19,7 +19,8 @@ int main()
     fprintf(log_file, "Hyperperiod %d\n", lcm);
     fprintf(log_file, "Utilisation %f\n", util);
     fclose(log_file);
-    printf("%d\n", get_lcm(global_tasks, task_count));
+    // printf("%d\n", get_lcm(global_tasks, task_count));
+    printf("%d\n", lcm);
     schedule_mllf(ready_queue, task_count, lcm, global_tasks, &pid_count);
     calculate_parameters(global_tasks, task_count);
     return 0;

@@ -102,7 +102,8 @@ float get_min_lax(process **ready_queue, int task_count)
         if (ready_queue[i])
         {
             // printf("lax %d = %d", i, ready_queue[i]->slack);
-            printf("lax %d = %d\n", i, ready_queue[i]->slack);
+            //commenting out the line below as it's only to check if things are working fine.
+            // printf("lax %d = %d\n", i, ready_queue[i]->slack);
             min_lax = min(min_lax, ready_queue[i]->slack);
         }
     }
@@ -127,7 +128,8 @@ int get_min_lax_procs(process **ready_queue, int task_count)
         }
     }
     // printf("Min lax proc is %d", to_return);
-    printf("Min lax proc is %d\n", to_return);
+    //commenting line below as it's not required. Just for verification purpose.
+    // printf("Min lax proc is %d\n", to_return);
     return to_return;
 }
 
@@ -263,14 +265,17 @@ void schedule_mllf(process **rdqueue, int nproc, int hyperperiod, task **global_
             prev_pid = cur_pid;
             cur_task_id = rdqueue[min_deadline_task]->task_id;
             //printf("time:%d process executing: %d\n", cur_time, cur_proc->pid);
-            FILE *schedule_file = fopen("schedule.txt", "a+");
+            FILE *schedule_file = fopen("schedule.txt", "a+"); //why not open the file in the begining before loop
+            //begins in write mode. This way throughout the loop we can keep writing and when
+            //next time the program executes, the file will be made for new execution instead of having old one.
+
             //int laxity = rdqueue[min_deadline_task]->task_ref->deadline - cur_time - rdqueue[min_deadline_task]->ret;
             fprintf(schedule_file, "time:%d job executing: T%d-%d\n", cur_time, cur_task_id, global_tasks[cur_task_id]->job_index);
             //printf("time:%d process executing: %d actual execution time = %d laxity: %d\n", cur_time, cur_proc->pid, cur_proc->aet, laxity);
             fclose(schedule_file);
             //find the next least slack time job
             float deadline_diff;
-            printf("next edf%d\n", next_least_deadline_task);
+            printf("next edf%d\n", next_least_deadline_task); // don't know why this printf is there
             if (next_least_deadline_task != -1)
                 deadline_diff = rdqueue[next_least_deadline_task]->task_ref->deadline - rdqueue[min_deadline_task]->slack - cur_time;
             else
