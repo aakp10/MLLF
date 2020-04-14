@@ -37,7 +37,7 @@ process_init(int pid_v, int wcet_v, int task_id, task *task_ref)
 
 void submit_processes(task ***global_tasks, int *task_count, int *pid_count, process ***rq, float *util)
 {
-    FILE *task_file = fopen("input5", "r");
+    FILE *task_file = fopen("input6", "r");
     int wcet, period, deadline;
     int task_no = 0;
     int process_count;
@@ -270,7 +270,7 @@ void schedule_mllf(process **rdqueue, int nproc, int hyperperiod, task **global_
             //next time the program executes, the file will be made for new execution instead of having old one.
 
             //int laxity = rdqueue[min_deadline_task]->task_ref->deadline - cur_time - rdqueue[min_deadline_task]->ret;
-            fprintf(schedule_file, "time:%d job executing: T%d-%d\n", cur_time, cur_task_id, global_tasks[cur_task_id]->job_index);
+            fprintf(schedule_file, "time:%d job executing: T%d-%d\n", cur_time, cur_task_id + 1, global_tasks[cur_task_id]->job_index);
             //printf("time:%d process executing: %d actual execution time = %d laxity: %d\n", cur_time, cur_proc->pid, cur_proc->aet, laxity);
             fclose(schedule_file);
             //find the next least slack time job
@@ -308,7 +308,7 @@ void schedule_mllf(process **rdqueue, int nproc, int hyperperiod, task **global_
                 global_tasks[cur_task_id]->response_time[job_index - 1] = cur_time - global_tasks[cur_task_id]->arrival[job_index - 1];
                 FILE *schedule_file = fopen("schedule.txt", "a+");
                 //int laxity = rdqueue[min_deadline_task]->task_ref->deadline - cur_time - rdqueue[min_deadline_task]->ret;
-                fprintf(schedule_file, "job : T%d-%d response time %f", cur_task_id, global_tasks[cur_task_id]->job_index, global_tasks[cur_task_id]->response_time[job_index - 1]);
+                fprintf(schedule_file, "job : T%d-%d response time %f\n", cur_task_id + 1, global_tasks[cur_task_id]->job_index, global_tasks[cur_task_id]->response_time[job_index - 1]);
                 //printf("time:%d process executing: %d actual execution time = %d laxity: %d\n", cur_time, cur_proc->pid, cur_proc->aet, laxity);
                 fclose(schedule_file);
                 rdqueue[min_deadline_task] = NULL;
