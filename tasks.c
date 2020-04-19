@@ -37,13 +37,12 @@ process_init(int pid_v, int wcet_v, int task_id, task *task_ref)
 
 void submit_processes(task ***global_tasks, int *task_count, int *pid_count, process ***rq, float *util)
 {
-    FILE *task_file = fopen("input6", "r");
+    FILE *task_file = fopen("input5", "r");
     int wcet, period, deadline;
     int task_no = 0;
     int process_count;
     fscanf(task_file, "%d", &process_count);
-    // printf("%d", process_count);
-    printf("%d\n", process_count);
+    printf("%d", process_count);
     //pqueue *ready_queue = pqueue_init(process_count, MAXPROCESS);
     task **taskset = (task **)malloc(process_count * sizeof(task *));
     process **ready_queue = (process **)malloc(process_count * sizeof(process *));
@@ -101,9 +100,7 @@ float get_min_lax(process **ready_queue, int task_count)
     {
         if (ready_queue[i])
         {
-            // printf("lax %d = %d", i, ready_queue[i]->slack);
-            //commenting out the line below as it's only to check if things are working fine.
-            // printf("lax %d = %d\n", i, ready_queue[i]->slack);
+            printf("lax %d = %d", i, ready_queue[i]->slack);
             min_lax = min(min_lax, ready_queue[i]->slack);
         }
     }
@@ -127,9 +124,7 @@ int get_min_lax_procs(process **ready_queue, int task_count)
                 to_return = i;
         }
     }
-    // printf("Min lax proc is %d", to_return);
-    //commenting line below as it's not required. Just for verification purpose.
-    // printf("Min lax proc is %d\n", to_return);
+    printf("Min lax proc is %d", to_return);
     return to_return;
 }
 
@@ -165,8 +160,7 @@ float get_next_arrival(process **rdqueue, int cur_time, int nproc, task **taskse
         if (rdqueue[i] == NULL)
         {
             int arr = ceilf((float)cur_time / taskset[i]->period);
-            // printf("arr in arrival %d", arr);
-            printf("arr in arrival %d\n", arr);
+            printf("arr in arrival %d", arr);
             arr *= taskset[i]->period;
             min_arrival = min(min_arrival, arr);
         }
@@ -203,16 +197,14 @@ void check_arrivals(process **ready_queue, task **global_tasks, int cur_time, in
     {
         if (ready_queue[i] == NULL && global_tasks[i]->next_release_time /*period*/ <= cur_time)
         {
-            // printf("Entered check_arrivals for %d at %d", i, cur_time);
-            printf("Entered check_arrivals for %d at %d\n", i, cur_time);
+            printf("Entered check_arrivals for %d at %d", i, cur_time);
             //update release time
             global_tasks[i]->next_release_time += global_tasks[i]->period;
             //deadline is considered same as period
             global_tasks[i]->deadline += global_tasks[i]->period;
             global_tasks[i]->job_index += 1;
             global_tasks[i]->arrival[global_tasks[i]->job_index - 1] = cur_time;
-            // printf("Deadline updated for task %d is %d", i, global_tasks[i]->deadline);
-            printf("Deadline updated for task %d is %d\n", i, global_tasks[i]->deadline);
+            printf("Deadline updated for task %d is %d", i, global_tasks[i]->deadline);
             //recreate the process .
             process *p = process_init((*pid_count), global_tasks[i]->wcet,
                                       global_tasks[i]->task_id, global_tasks[i]);
@@ -245,9 +237,10 @@ void schedule_mllf(process **rdqueue, int nproc, int hyperperiod, task **global_
         //int *least_lax_procs = get_min_lax_procs(rdqueue, nproc);
         //find min deadline job among least_lax_procs
         int min_deadline_task = get_min_lax_procs(rdqueue, nproc);
+        //printf("\nMin deadline task : %d",min_deadline_task);
         if (min_deadline_task != -1)
         {
-            if (prev_min_deadline_task != -1 && rdqueue[prev_min_deadline_task] && rdqueue[min_deadline_task]->slack == rdqueue[prev_min_deadline_task]->slack)
+            if (prev_min_deadline_task != -1 && rdqueue[prev_min_deadline_task] && rdqueue[min_deadline_task]->slack == rdqueue[prev_min_deadline_task]->slack && rdqueue[min_deadline_task]->task_ref->deadline > rdqueue[prev_min_deadline_task]->task_ref->deadline)
             {
                 min_deadline_task = prev_min_deadline_task;
             }
@@ -265,37 +258,39 @@ void schedule_mllf(process **rdqueue, int nproc, int hyperperiod, task **global_
             prev_pid = cur_pid;
             cur_task_id = rdqueue[min_deadline_task]->task_id;
             //printf("time:%d process executing: %d\n", cur_time, cur_proc->pid);
-            FILE *schedule_file = fopen("schedule.txt", "a+"); //why not open the file in the begining before loop
-            //begins in write mode. This way throughout the loop we can keep writing and when
-            //next time the program executes, the file will be made for new execution instead of having old one.
-
+            FILE *schedule_file = fopen("schedule.txt", "a+");
             //int laxity = rdqueue[min_deadline_task]->task_ref->deadline - cur_time - rdqueue[min_deadline_task]->ret;
-            fprintf(schedule_file, "time:%d job executing: T%d-%d\n", cur_time, cur_task_id + 1, global_tasks[cur_task_id]->job_index);
+            fprintf(schedule_file, "\ntime:%d job executing: T%d-%d\n", cur_time, cur_task_id, global_tasks[cur_task_id]->job_index);
             //printf("time:%d process executing: %d actual execution time = %d laxity: %d\n", cur_time, cur_proc->pid, cur_proc->aet, laxity);
             fclose(schedule_file);
             //find the next least slack time job
             float deadline_diff;
-            printf("next edf%d\n", next_least_deadline_task); // don't know why this printf is there
+            printf(" next edf%d\n", next_least_deadline_task);
             if (next_least_deadline_task != -1)
-                deadline_diff = rdqueue[next_least_deadline_task]->task_ref->deadline - rdqueue[min_deadline_task]->slack - cur_time;
+                deadline_diff = rdqueue[next_least_deadline_task]->slack - rdqueue[min_deadline_task]->slack;
             else
                 deadline_diff = 1 << 30;
             float next_completion = rdqueue[min_deadline_task]->ret;
             float next_arrival = get_next_arrival(rdqueue, cur_time, nproc, global_tasks) - cur_time;
             //Processor claimed by the job for ∆ = next-min-slack-time - current-slack-time.
-            // printf("next completion %f", next_completion+cur_time);
-            printf("next completion %f\n", next_completion + cur_time);
-            printf("next arrival %f \n", next_arrival + cur_time);
+            //printf("\n min deadline task %d",min_deadline_task);
+            //printf("\n prev min deadline task %d",prev_min_deadline_task);
+            printf(" next completion %f", next_completion + cur_time);
+            printf(" next arrival %f \n", next_arrival + cur_time);
+
+            //printf(" \nnext least deadline task deadline %d \n", rdqueue[next_least_deadline_task]->task_ref->deadline);
+            //printf(" \nmin deadline task %d and its slack %d \n",min_deadline_task,rdqueue[min_deadline_task]->slack);
+            //printf(" \ndeadline diff %f \n", deadline_diff);
+            //printf(" \nnext arrival for min %f \n", next_arrival);
+            //printf(" \nnext completion for min %f \n", next_completion);
             float next_decision = min(deadline_diff, min(next_completion, next_arrival));
             rdqueue[min_deadline_task]->ret -= next_decision;
             cur_time += next_decision;
-            // printf("next decision pt%f", next_decision);
-            printf("next decision pt%f\n", next_decision);
+            printf(" next decision pt%f", next_decision);
             //cur_time++;
             if (rdqueue[min_deadline_task]->ret == 0)
             {
-                // printf("deleting %d", min_deadline_task);
-                printf("deleting %d\n", min_deadline_task);
+                printf(" deleting%d", min_deadline_task);
                 /*FILE *log_file = fopen("sched-op-lst.txt", "a+");
                 int response_time = cur_time - cur_proc->task_ref->next_release_time - cur_proc->task_ref->period; 
                 fprintf(log_file, "task: %d pid:%d aet: %d RESPONSE TIME: %d ", cur_proc->task_id, cur_proc->pid,
@@ -308,7 +303,7 @@ void schedule_mllf(process **rdqueue, int nproc, int hyperperiod, task **global_
                 global_tasks[cur_task_id]->response_time[job_index - 1] = cur_time - global_tasks[cur_task_id]->arrival[job_index - 1];
                 FILE *schedule_file = fopen("schedule.txt", "a+");
                 //int laxity = rdqueue[min_deadline_task]->task_ref->deadline - cur_time - rdqueue[min_deadline_task]->ret;
-                fprintf(schedule_file, "job : T%d-%d response time %f\n", cur_task_id + 1, global_tasks[cur_task_id]->job_index, global_tasks[cur_task_id]->response_time[job_index - 1]);
+                fprintf(schedule_file, "job : T%d-%d response time %f", cur_task_id, global_tasks[cur_task_id]->job_index, global_tasks[cur_task_id]->response_time[job_index - 1]);
                 //printf("time:%d process executing: %d actual execution time = %d laxity: %d\n", cur_time, cur_proc->pid, cur_proc->aet, laxity);
                 fclose(schedule_file);
                 rdqueue[min_deadline_task] = NULL;
@@ -325,7 +320,7 @@ void schedule_mllf(process **rdqueue, int nproc, int hyperperiod, task **global_
         {
             FILE *schedule_file = fopen("schedule.txt", "a+");
             //int laxity = rdqueue[min_deadline_task]->task_ref->deadline - cur_time - rdqueue[min_deadline_task]->ret;
-            fprintf(schedule_file, "time:%d job executing: Idle\n", cur_time);
+            fprintf(schedule_file, "\ntime:%d job executing: Idle\n", cur_time);
             //printf("time:%d process executing: %d actual execution time = %d laxity: %d\n", cur_time, cur_proc->pid, cur_proc->aet, laxity);
             fclose(schedule_file);
             cur_time++;
