@@ -1,10 +1,11 @@
 #ifndef __TASKS_H_
 #define __TASKS_H_
 
-#define min(a,b) (a<b?a:b)
+#define min(a, b) (a < b ? a : b)
 typedef struct process process;
 typedef struct _task task;
-struct _task{
+struct _task
+{
     int task_id;
     int wcet;
     int period;
@@ -17,8 +18,8 @@ struct _task{
     float arrival[100];
 };
 
-
-struct process{
+struct process
+{
     int pid;
     //to map the job to task
     int task_id;
@@ -36,25 +37,23 @@ struct process{
 };
 
 typedef enum _cache cache;
-enum _cache{
+enum _cache
+{
     NO_CACHE_IMPACT,
     CACHE_IMPACT,
     NUM_STATES
 };
 
-
-void    submit_processes(task ***taskset, int *task_count, int *pid_count, process ***ready_queue, float *util);
-void    display_process(process **ready_queue, int size);
-int     get_lcm(task **global_tasks, int task_count);
-process* process_init(int pid_v, int wcet_v, int task_id, task *task_ref);
-float   get_next_arrival(process **rdqueue, int cur_time, int nproc, task **taskset);
-int
-get_next_edf(int min_deadline_task, process **rdqueue, int nproc);
-int
-get_min_lax_procs(process **ready_queue, int task_count);
-cache   check_cache_impact(int cur_task_id, int prev_task_id);
-void    update_slack(process **rdqueue, int nproc, int cur_time);
-void    check_arrivals(process **ready_queue, task **global_tasks, int cur_time, int nproc, int *pid_count);
-void    schedule_mllf(process **rdqueue, int nproc, int hyperperiod, task **global_tasks, int *pid_count);
-void    calculate_parameters(task **global_tasks, int task_count);
+void submit_processes(task ***taskset, int *task_count, int *pid_count, process ***ready_queue, float *util);
+void display_process(process **ready_queue, int size);
+int get_lcm(task **global_tasks, int task_count);
+process *process_init(int pid_v, int wcet_v, int task_id, task *task_ref);
+float get_next_arrival(process **rdqueue, int cur_time, int nproc, task **taskset);
+int get_next_edf(int min_deadline_task, process **rdqueue, int nproc);
+int get_min_lax_procs(process **ready_queue, int task_count);
+cache check_cache_impact(int cur_task_id, int prev_task_id);
+void update_slack(process **rdqueue, int nproc, int cur_time);
+void check_arrivals(process **ready_queue, task **global_tasks, int cur_time, int nproc, int *pid_count);
+void schedule_mllf(process **rdqueue, int nproc, int hyperperiod, task **global_tasks, int *pid_count);
+void calculate_parameters(task **global_tasks, int task_count);
 #endif

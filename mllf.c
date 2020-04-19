@@ -12,13 +12,15 @@ int main()
 {
     float util = 0;
     submit_processes(&global_tasks, &task_count, &pid_count, &ready_queue, &util);
-    display_process(ready_queue, task_count);
+    // display_process(ready_queue, task_count);
     int lcm = get_lcm(global_tasks, task_count);
-    FILE *log_file = fopen("sched-op-mllf.txt", "a+");
+    // FILE *log_file = fopen("sched-op-mllf.txt", "a+");
+    FILE *log_file = fopen("sched-op-mllf.txt", "w");
     fprintf(log_file, "Hyperperiod %d\n", lcm);
     fprintf(log_file, "Utilisation %f\n", util);
     fclose(log_file);
-    printf("%d", get_lcm(global_tasks, task_count));
+    // printf("%d\n", get_lcm(global_tasks, task_count));
+    printf("%d\n", lcm);
     schedule_mllf(ready_queue, task_count, lcm, global_tasks, &pid_count);
     calculate_parameters(global_tasks, task_count);
     return 0;
